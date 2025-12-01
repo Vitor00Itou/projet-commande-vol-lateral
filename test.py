@@ -3,17 +3,16 @@ from ivy.std_api import *
 FCU_ON = False
 def on_push(agent, *larg):
 	global FCU_ON
-	if FCU_ON == False:
-		FCU_ON = True
-		IvySendMsg("FCUAP1 on")
-	else:
-		FCU_ON = False
+	if FCU_ON:
 		IvySendMsg("FCUAP1 off")
+	else:
+		IvySendMsg("FCUAP1 on")
+	FCU_ON = not FCU_ON
 
 null_callback = lambda *a: None
 
 IvyInit(
-    "Hello Simulator",
+    "HelloSimulator",
     "Ready",
     0,
     null_callback,
