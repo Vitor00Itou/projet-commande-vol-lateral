@@ -35,13 +35,13 @@ psie = 0*DEG2RAD # rad
 phie = 0*5*DEG2RAD # rad
 
 # Conditions initiales dans les integrateurs de cinematiqueDuVol
-xe = 0*NM2M # m
-ye = 0*NM2M # m
+X_EQUI = 0*NM2M # m
+Y_EQUI = 0*NM2M # m
 ze = 0*100*FL2M # m
 
 # Linearisation
 Ve = Vie + k*ze
-xe = [Ve, gammae, psie, phie]
+X_EQUI = [Ve, gammae, psie, phie]
 nxe = np.sin(gammae)
 nze = np.cos(gammae)
 pe = 0
@@ -66,7 +66,7 @@ tau_phi = 0.4
 tau_psi = 10*tau_phi # tau_psi >> tau_phi
 
 # Capture d'axe
-tau_ey = 5*tau_psi
+TAU_EY = 5*tau_psi
 xa = 1000
 ya = 2500
 rhoa = 180*DEG2RAD
