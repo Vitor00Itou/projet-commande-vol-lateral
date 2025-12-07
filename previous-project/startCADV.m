@@ -1,7 +1,7 @@
 %% Modelling and control of point mass aircraft model
 %
 %%
-clear
+%clear
 %close all
 %bdclose all
 warning('off')
@@ -24,7 +24,7 @@ psiW = 100*DEG2RAD; %direction d'ou vient le vent, rad
 W = 30*KTS2MS; %vitesse du vent, m/s
 
 %Conditions initiales dans les integrateurs de modeleAvion
-Vie = 130*KTS2MS; %vitesse indiquée initiale
+Vie = 130*KTS2MS; %vitesse indiquï¿½e initiale
 gammae = 0*DEG2RAD; %rad
 psie = 0*DEG2RAD; %rad
 phie = 0*5*DEG2RAD; %rad
@@ -43,25 +43,28 @@ pe = 0;
 ue = [nxe, nze, pe]; 
 %[A,B,C,D] = linmod('modeleAvion', xe, ue);
 
-% Contrôle lateral
+% Contrï¿½le lateral
 k11 = 0.1;
 k22 = 1;
 
 tauGamma = Ve / (g*k22);
 tauh = 5*tauGamma; % tauh >> tauGamma
 
-% Contrôle longitudinal
+% Contrï¿½le longitudinal
 m = 0.9; % coeff amortisement
 w0 = 0.1; % pulsation naturelle
 k1 = w0^2 * Ve / g;
 k2 = 2*m*w0;
 
-% Contrôle lateral 2
-tau_phi = 0.4;
+% Contrï¿½le lateral 2
+tau_phi = 1;
 tau_psi = 10*tau_phi; % tau_psi >> tau_phi
 
 % Capture d'axe
 tau_ey = 5*tau_psi;
-xa = 1000;
-ya = 2500;
-rhoa = 180*DEG2RAD;
+xa = 4000;
+ya = 3500;
+rhoa = 120*DEG2RAD;
+
+% Periode echantillonnage
+Ts = 1; % sec
