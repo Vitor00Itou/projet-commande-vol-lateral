@@ -14,7 +14,7 @@ warning('off')
 """
 
 pi = np.pi
-g = 9.80665 # m/s2
+GRAVITY = 9.80665 # m/s2
 DEG2RAD = pi / 180
 NM2M = 1852
 KTS2MS = NM2M / 3600
@@ -25,8 +25,8 @@ FPM2MS = FT2M / 60
 k = KTS2MS / (2*FL2M)
 
 # Vent
-psiW = 100*DEG2RAD # direction d'ou vient le vent, rad
-W = 30*KTS2MS # vitesse du vent, m/s
+PSI_WIND = 100*DEG2RAD # direction d'ou vient le vent, rad
+WIND_SPEED = 30*KTS2MS # vitesse du vent, m/s
 
 # Conditions initiales dans les integrateurs de modeleAvion
 Vie = 130*KTS2MS # vitesse indiqu�e initiale
@@ -40,8 +40,8 @@ Y_EQUI = 0*NM2M # m
 ze = 0*100*FL2M # m
 
 # Linearisation
-Ve = Vie + k*ze
-X_EQUI = [Ve, gammae, psie, phie]
+V_EQUI = Vie + k*ze
+X_EQUI = [V_EQUI, gammae, psie, phie]
 nxe = np.sin(gammae)
 nze = np.cos(gammae)
 pe = 0
@@ -52,21 +52,21 @@ ue = [nxe, nze, pe]
 k11 = 0.1
 k22 = 1
 
-tauGamma = Ve / (g*k22)
+tauGamma = V_EQUI / (GRAVITY*k22)
 tauh = 5*tauGamma # tauh >> tauGamma
 
 #  Contrôle longitudinal
 m = 0.9 # coeff amortisement
 w0 = 0.1 # pulsation naturelle
-k1 = w0**2 * Ve / g
+k1 = w0**2 * V_EQUI / GRAVITY
 k2 = 2*m*w0
 
 # Contrôle lateral 2
-tau_phi = 0.4
-tau_psi = 10*tau_phi # tau_psi >> tau_phi
+TAU_PHI = 0.4
+TAU_PSI = 10*TAU_PHI # tau_psi >> tau_phi
 
 # Capture d'axe
-TAU_EY = 5*tau_psi
+TAU_EY = 5*TAU_PSI
 xa = 1000
 ya = 2500
 rhoa = 180*DEG2RAD
