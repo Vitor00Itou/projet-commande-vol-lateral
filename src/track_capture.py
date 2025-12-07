@@ -9,7 +9,7 @@ def get_y_dot(V, gamma, psi, wind, psi_wind):
 
 def get_drift(V, gamma, wind, psi_wind, track):
     arg = wind / (V*cos(gamma)) * sin(pi + psi_wind - track);
-    arg = max(-1, min(1, arg))
+    arg = max(-1, min(1, arg)) # -1 <= arg <= 1
     return asin(arg)
 
 # Named as 'capture_de_route' in MATLAB

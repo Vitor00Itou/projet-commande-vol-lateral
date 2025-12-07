@@ -43,8 +43,8 @@ def on_FGS_axis_capture_command(agent, *larg):
     global axis_command
     xa = larg[0]
     ya = larg[1]
-    Ra = larg[2]
-    axis_command = (xa, ya, Ra)
+    axis_track = larg[2] # this has also been named as 'Ra' in lectures
+    axis_command = (xa, ya, axis_track)
 
 # ===== Initializing =====
 null_callback = lambda *a: None
