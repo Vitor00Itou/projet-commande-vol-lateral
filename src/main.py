@@ -1,77 +1,52 @@
-import numpy as np
+from ivy.std_api import *
+
+managed_mode_on = True
+
+# ===== Handlers =====
+def on_state_vector(agent, *larg):
+    pass
+
+def on_FCU_lateral_selected(agent, *larg):
+    pass
+
+def on_FCU_lateral_managed_trigger(agent, *larg):
+    pass
+
+def on_FGS_axis_capture_command(agent, *larg):
+    pass
+
+# ===== Initializing =====
+null_callback = lambda *a: None
+module_name = "PALateral"
+bus_address = "127.255.255.255:2010"
+ready_msg = "Ready"
+IvyInit(
+	module_name,
+	ready_msg,
+	0,
+	null_callback,
+	null_callback
+)
+IvyStart(bus_address)
+
+# ===== Bindings (subscriptions) =====
+# State vector
+STATE_VECTOR_TOPIC = r'^StateVector x=(\S+) y=(\S+) z=(\S+) Vp=(\S+)fpa=(\S+) psi=(\S+) phi=(\S+)'
+IvyBindMsg(on_state_vector, STATE_VECTOR_TOPIC)
 
 """
-Modelling and control of point mass aircraft model
-
-clear
-%close all
-%bdclose all
-warning('off')
-
-%% The system.
-
-%Constantes
+Waits for the lateral selected mode trigger, type of command (Heading or Track) and command value from the FCU
 """
+FCU_LATERAL_SELECTED_TOPIC = r'^FCULateral Mode=Selected(\S+) Val=(\S+)'
+IvyBindMsg(on_FCU_lateral_selected, FCU_LATERAL_SELECTED_TOPIC)
 
-pi = np.pi
-g = 9.80665 # m/s2
-DEG2RAD = pi / 180
-NM2M = 1852
-KTS2MS = NM2M / 3600
-FT2M = 0.3048
-FL2M = 100 * FT2M
-FPM2MS = FT2M / 60
+# Lateral managed mode trigger from the FCU
+FCU_LATERAL_MANAGED_TRIGGER_TOPIC = r'^FCULateral Mode=Managed Val=(\S+)'
+IvyBindMsg(on_FCU_lateral_managed_trigger, FCU_LATERAL_MANAGED_TRIGGER_TOPIC)
 
-k = KTS2MS / (2*FL2M)
+# FGS lateral command for axis capture
+FGS_LATERAL_COMMAND_TOPIC = r'^FGSLateral Mode=Axe Xa=(\S+) Ya=(\S+) Ra=(\S+)'
+IvyBindMsg(on_FGS_axis_capture_command, FGS_LATERAL_COMMAND_TOPIC)
 
-# Vent
-psiW = 100*DEG2RAD # direction d'ou vient le vent, rad
-W = 30*KTS2MS # vitesse du vent, m/s
-
-# Conditions initiales dans les integrateurs de modeleAvion
-Vie = 130*KTS2MS # vitesse indiqu�e initiale
-gammae = 0*DEG2RAD # rad
-psie = 0*DEG2RAD # rad
-phie = 0*5*DEG2RAD # rad
-
-# Conditions initiales dans les integrateurs de cinematiqueDuVol
-xe = 0*NM2M # m
-ye = 0*NM2M # m
-ze = 0*100*FL2M # m
-
-# Linearisation
-Ve = Vie + k*ze
-xe = [Ve, gammae, psie, phie]
-nxe = np.sin(gammae)
-nze = np.cos(gammae)
-pe = 0
-ue = [nxe, nze, pe]
-# [A,B,C,D] = linmod('modeleAvion', xe, ue)
-
-# Contrôle lateral
-k11 = 0.1
-k22 = 1
-
-tauGamma = Ve / (g*k22)
-tauh = 5*tauGamma # tauh >> tauGamma
-
-#  Contrôle longitudinal
-m = 0.9 # coeff amortisement
-w0 = 0.1 # pulsation naturelle
-k1 = w0**2 * Ve / g
-k2 = 2*m*w0
-
-# Contrôle lateral 2
-tau_phi = 0.4
-tau_psi = 10*tau_phi # tau_psi >> tau_phi
-
-# Capture d'axe
-tau_ey = 5*tau_psi
-xa = 1000
-ya = 2500
-rhoa = 180*DEG2RAD
-
-# Periode echantillonnage
-Ts = 1 # sec
-
-#writematrix([TAS_m_s.time, TAS_m_s.signals.values], 'Scenario1.xls')
+# Start module
+IvyMainLoop()
