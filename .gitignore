@@ -1,2 +1,5 @@
 .venv~
 previous-project/slprj
+*.mat
+__pycache__/
+*.l

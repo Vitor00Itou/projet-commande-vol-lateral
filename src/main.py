@@ -18,6 +18,7 @@ fcu_track_command = psie # rads
 fgs_axis_command = DEFAULT_AXIS
 wind = WIND_SPEED
 psi_wind = PSI_WIND
+timestamp = 0
 
 # ===== Helpers =====
 # Bank angle control law 2 (first order)
@@ -102,6 +103,10 @@ def on_wind_component(agent, *larg):
     global psi_wind
     wind = larg[0]
     psi_wind = larg[1]
+    
+def on_timestamp(agent, *larg):
+    global timestamp
+    timestamp = larg[0]
 
 # ===== Initializing =====
 null_callback = lambda *a: None
@@ -147,6 +152,12 @@ Receives wind parameters
 """
 WIND_COMPONENT_TOPIC = r'WindComponent VWind=(\S+) dirWind=(\S+)'
 IvyBindMsg(on_wind_component, WIND_COMPONENT_TOPIC)
+
+"""
+Receives timestamps
+"""
+TIMESTAMP_TOPIC = r'Time t=(\S+)'
+IvyBindMsg(on_timestamp, TIMESTAMP_TOPIC)
 
 # ===== Start module =====
 IvyMainLoop()
