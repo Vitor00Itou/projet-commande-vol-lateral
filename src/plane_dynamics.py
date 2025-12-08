@@ -73,7 +73,7 @@ def simulate_avion(t_inicial, t_final):
     """
     
     # Configuração de Tempo
-    dt = 0.01  # Passo de integração (Ts)
+    dt = 1  # Passo de integração (Ts)
     t = np.arange(t_inicial, t_final, dt)
     n_steps = len(t)
 
