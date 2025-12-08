@@ -1,20 +1,23 @@
 from ivy.std_api import *
-from constants import psie, TAU_PHI, DEG2RAD, V_EQUI, GRAVITY, TAU_PSI
+from constants import psie, TAU_PHI, DEG2RAD, V_EQUI, GRAVITY, TAU_PSI, WIND_SPEED, PSI_WIND
 from numpy import pi
 from track_capture import track_capture
 from axis_capture import axis_capture
 
 managed_mode_on = True
 
+# Lateral control constants
 DEFAULT_AXIS = (0, 0, 0) # (m, m, rad) - Position and angle of the axis
+MAX_BANK_ANGLE = 15 * DEG2RAD
+MIN_BANK_ANGLE = -15 * DEG2RAD
+
+# Global control variables
 command_type = "Heading" # default
 fcu_heading_command = psie # rads
 fcu_track_command = psie # rads
 fgs_axis_command = DEFAULT_AXIS
-
-# Lateral control constants
-MAX_BANK_ANGLE = 15 * DEG2RAD
-MIN_BANK_ANGLE = -15 * DEG2RAD
+wind = WIND_SPEED
+psi_wind = PSI_WIND
 
 # ===== Helpers =====
 # Bank angle control law 2 (first order)
@@ -42,7 +45,7 @@ def on_state_vector(agent, *larg):
     phi = larg[6]
     
     psi_command = 0
-    x_dot, y_dot, drift = track_capture(Vp, gamma, psi)
+    x_dot, y_dot, drift = track_capture(Vp, gamma, psi, wind, psi_wind)
     if managed_mode_on:
         # Extract axis coordinates
         global fgs_axis_command
@@ -93,6 +96,12 @@ def on_FGS_axis_capture_command(agent, *larg):
     ya = larg[1]
     axis_track = larg[2] # this has also been named as 'Ra' in lectures
     fgs_axis_command = (xa, ya, axis_track)
+    
+def on_wind_component(agent, *larg):
+    global wind
+    global psi_wind
+    wind = larg[0]
+    psi_wind = larg[1]
 
 # ===== Initializing =====
 null_callback = lambda *a: None
@@ -132,6 +141,12 @@ Receives the FGS lateral command for axis capture
 """
 FGS_LATERAL_COMMAND_TOPIC = r'^FGSLateral Mode=Axe Xa=(\S+) Ya=(\S+) Ra=(\S+)'
 IvyBindMsg(on_FGS_axis_capture_command, FGS_LATERAL_COMMAND_TOPIC)
+
+"""
+Receives wind parameters
+"""
+WIND_COMPONENT_TOPIC = r'WindComponent VWind=(\S+) dirWind=(\S+)'
+IvyBindMsg(on_wind_component, WIND_COMPONENT_TOPIC)
 
 # ===== Start module =====
 IvyMainLoop()
