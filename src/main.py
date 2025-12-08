@@ -37,9 +37,6 @@ def modulo360(heading_input):
 # ===== Handlers =====
 def on_state_vector(agent, *larg):
     # Extract state variables from the vector
-    x = larg[0]
-    y = larg[1]
-    z = larg[2]
     Vp = larg[3]
     gamma = larg[4] # named as 'fpa' in the Ivy message
     psi = larg[5]
