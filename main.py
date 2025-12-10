@@ -57,7 +57,6 @@ IvyInit(
 )
 IvyStart(bus_address)
 
-
 # Receives the current state vector of the plane
 # Indices no capture: x=0, y=1, z=2, Vp=3, fpa=4, psi=5, phi=6
 STATE_VECTOR_TOPIC = r'^StateVector x=(\S+) y=(\S+) z=(\S+) Vp=(\S+) fpa=(\S+) psi=(\S+) phi=(\S+)'
@@ -82,6 +81,5 @@ IvyBindMsg(on_wind_component, WIND_COMPONENT_TOPIC)
 # Receives timestamps
 TIMESTAMP_TOPIC = r'Time t=(\S+)'
 IvyBindMsg(on_timestamp, TIMESTAMP_TOPIC)
-
 
 IvyMainLoop()

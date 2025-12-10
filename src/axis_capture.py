@@ -1,4 +1,4 @@
-from constants import TAU_EY, X_EQUI, Y_EQUI
+from src.constants import TAU_EY, X_EQUI, Y_EQUI
 from numpy import sin, cos, asin, sqrt
 
 """

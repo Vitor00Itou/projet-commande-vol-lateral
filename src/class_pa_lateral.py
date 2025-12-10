@@ -1,7 +1,7 @@
 from numpy import pi
-from axis_capture import axis_capture
-from track_capture import track_capture
-from constants import psie, TAU_PHI, DEG2RAD, V_EQUI, GRAVITY, TAU_PSI, WIND_SPEED, PSI_WIND
+from src.axis_capture import axis_capture
+from src.track_capture import track_capture
+from src.constants import psie, TAU_PHI, DEG2RAD, V_EQUI, GRAVITY, TAU_PSI, WIND_SPEED, PSI_WIND
 
 class PA_Lateral:
     def __init__(self):
