@@ -3,7 +3,16 @@ import pandas as pd
 from ivy.std_api import *
 from src.class_pa_lateral import PA_Lateral
 
-stats = pd.DataFrame(columns=['Time', 'TAS', 'X', 'Y', 'Ey', 'Psi', 'Phi', 'RollRate'])
+stats = {
+    'Time': [],
+    'TAS': [],
+    'X': [],
+    'Y': [],
+    'Ey': [],
+    'Psi': [],
+    'Phi': [],
+    'RollRate': []
+}
 
 pa = PA_Lateral()
 
@@ -21,6 +30,9 @@ def on_state_vector(agent, *larg):
     gamma = float(larg[4]) # 'fpa'
     psi = float(larg[5])
     phi = float(larg[6])
+    
+    print("======================== STATE VECTOR ========================")
+    print(larg)
     
     ey, roll_rate = pa.calculate_roll_rate(Vp, gamma, psi, phi)
     
