@@ -11,11 +11,19 @@ warning('off')
 % Periode echantillonnage
 Ts = 0.6; % sec
 
+% Definindo constantes do modelo
+psiW = 100*DEG2RAD; %direction d'ou vient le vent, rad
+W = 30*KTS2MS; %vitesse du vent, m/s
+xa = 1000; % Posição aeroporto em X (m)
+ya = 2000; % Posição aeropor em Y (m)
+rhoa = 120*DEG2RAD;
+commande_cap = 90;
+
 
 
 % --- RODA A SIMULAÇÃO ---
 % (Isso garante que os dados 'out' ou variáveis existam no Workspace)
-sim('modeleAvionNonLineaireDiscret'); 
+sim('CaptCapModeleAvionNonLineaireDiscret'); 
 
 % --- PREPARAÇÃO DOS DADOS ---
 % Nota: Dependendo da sua versão do Matlab/Simulink, os dados podem vir 
@@ -42,15 +50,16 @@ xa_vec       = xa * ones(n, 1);
 ya_vec       = ya * ones(n, 1);
 rhoa_vec     = rhoa * ones(n, 1);
 Ts_vec       = Ts * ones(n,1);
+c_cap_vec    = commande_cap * ones(n,1);
 
 % --- CRIAÇÃO DA TABELA ---
-T = table(t_vec, v_data, psi_data, phi_data, x_data, y_data, ey_data, ...
-          wind_spd_vec, wind_dir_vec, xa_vec, ya_vec, rhoa_vec, Ts_vec, ...
+T = table(t_vec, psi_data, phi_data, x_data, y_data, ...
+          c_cap_vec, wind_spd_vec, wind_dir_vec, Ts_vec, ...
           'VariableNames', ...
-          {'Time', 'TAS', 'Psi', 'Phi', 'X', 'Y', 'Ey', ...
-           'Input_W', 'Input_PsiW', 'Input_Xa', 'Input_Ya', 'Input_Rhoa', 'Input_Ts'});
+          {'Time', 'Psi', 'Phi', 'X', 'Y', ...
+           'Input_cap', 'Input_W', 'Input_PsiW', 'Input_Ts'});
 
 % --- SALVAR EXCEL ---
-filename = 'Scenario2.xlsx';
+filename = 'TS_cap1.xlsx';
 writetable(T, filename);
 disp(['Dados salvos com sucesso em: ', filename]);

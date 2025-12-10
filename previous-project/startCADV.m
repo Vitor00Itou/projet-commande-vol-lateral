@@ -68,3 +68,7 @@ rhoa = 120*DEG2RAD;
 
 % Periode echantillonnage
 Ts = 1; % sec
+
+
+commande_cap = 90;
+commande_route = 90;
