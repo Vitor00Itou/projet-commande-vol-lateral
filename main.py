@@ -1,20 +1,52 @@
+import pandas as pd
+
 from ivy.std_api import *
 from src.class_pa_lateral import PA_Lateral
+
+stats = pd.DataFrame(columns=['Time', 'TAS', 'X', 'Y', 'Ey', 'Psi', 'Phi', 'RollRate'])
 
 pa = PA_Lateral()
 
 def on_state_vector(agent, *larg):
+    """
+    Handles the state vector message from the simulator, computes the roll rate command,
+    and sends it back via Ivy.
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The state vector components as strings.
+            Expected order: x, y, z, Vp, gamma (fpa), psi, phi
+    """
     Vp = float(larg[3])
     gamma = float(larg[4]) # 'fpa'
     psi = float(larg[5])
     phi = float(larg[6])
     
-    roll_rate = pa.calculate_roll_rate(Vp, gamma, psi, phi)
+    ey, roll_rate = pa.calculate_roll_rate(Vp, gamma, psi, phi)
+    
+    stats['Time'].append(pa.timestamp)
+    stats['TAS'].append(Vp)
+    stats['X'].append(float(larg[0]))
+    stats['Y'].append(float(larg[1]))
+    stats['Ey'].append(ey)
+    stats['Psi'].append(psi)
+    stats['Phi'].append(phi)
+    stats['RollRate'].append(roll_rate)
     
     roll_rate_msg = f'PALat {roll_rate}'
     IvySendMsg(roll_rate_msg)
 
 def on_FCU_lateral_selected(agent, *larg):
+    """
+    Handles the FCU lateral selected mode message, updating the PA_Lateral instance
+    with the new mode and command values.  
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The command type and value as strings.
+            Expected order: cmd_type, value
+    """
+    
     cmd_type = larg[0]
     val = float(larg[1])
     
@@ -24,9 +56,26 @@ def on_FCU_lateral_selected(agent, *larg):
         pa.define_flight_mode(managed_mode=False, cmd_type=cmd_type, fcu_track_command=val)
 
 def on_FCU_lateral_managed_trigger(agent, *larg):
+    """
+    Handles the FCU lateral managed mode trigger message, updating the PA_Lateral instance
+    to managed mode.
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The managed mode value as a string (not used here).    
+    """
     pa.define_flight_mode(managed_mode=True, cmd_type=pa.command_type)
 
 def on_FGS_axis_capture_command(agent, *larg):
+    """
+    Handles the FGS lateral axis command message, updating the PA_Lateral instance
+    with the new axis commands.
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The axis commands as strings.
+            Expected order: xa, ya, axis_track 
+    """
     xa = float(larg[0])
     ya = float(larg[1])
     axis_track = float(larg[2])
@@ -34,11 +83,28 @@ def on_FGS_axis_capture_command(agent, *larg):
     pa.update_fgs_axis_command((xa, ya, axis_track))
     
 def on_wind_component(agent, *larg):
+    """
+    Handles the wind component message, updating the PA_Lateral instance
+    with the new wind speed and direction.
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The wind speed and direction as strings.
+            Expected order: wind_speed, wind_dir
+    """
     wind_speed = float(larg[0])
     wind_dir = float(larg[1])
     pa.update_wind_conditions(wind_speed, wind_dir)
     
 def on_timestamp(agent, *larg):
+    """
+    Handles the timestamp message, updating the PA_Lateral instance
+    with the new timestamp.
+    
+    Parameters:
+        agent: The Ivy agent (not used here).
+        *larg: The timestamp as a string.
+    """
     t = float(larg[0])
     pa.update_timestamp(t)
 

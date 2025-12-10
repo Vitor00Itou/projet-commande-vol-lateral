@@ -46,4 +46,4 @@ def axis_capture(x_dot, y_dot, axis_x, axis_y, axis_track, timestamp):
     y_acc += y_dot * dt
     
     lat_dist = axis_lateral_distance(x_acc, axis_x, y_acc, axis_y, axis_track)
-    return get_track_command(x_dot, y_dot, lat_dist, TAU_EY, axis_track)
+    return lat_dist, get_track_command(x_dot, y_dot, lat_dist, TAU_EY, axis_track)

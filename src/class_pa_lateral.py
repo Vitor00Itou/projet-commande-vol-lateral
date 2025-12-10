@@ -36,7 +36,7 @@ class PA_Lateral:
             axis_y = self.fgs_axis_command[1]
             axis_track = self.fgs_axis_command[2]
             
-            fgs_track_command = axis_capture(x_dot, y_dot, axis_x, axis_y, axis_track)    
+            ey, fgs_track_command = axis_capture(x_dot, y_dot, axis_x, axis_y, axis_track)    
             psi_command = fgs_track_command - drift
         else:
             if self.command_type == "Heading":
@@ -51,7 +51,7 @@ class PA_Lateral:
         
         roll_rate = phi_error / TAU_PHI
         
-        return roll_rate
+        return ey, roll_rate
     
     def define_flight_mode(self, managed_mode: bool, cmd_type: str, 
                            fcu_heading_command:float=None,
