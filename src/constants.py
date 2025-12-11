@@ -41,7 +41,7 @@ ze = 0*100*FL2M # m
 
 # Linearisation
 V_EQUI = Vie + k*ze
-X_EQUI = [V_EQUI, gammae, psie, phie]
+xe = [V_EQUI, gammae, psie, phie] # jsais pas quoi c'est ça
 nxe = np.sin(gammae)
 nze = np.cos(gammae)
 pe = 0
