@@ -1,5 +1,4 @@
 import pandas as pd
-
 from ivy.std_api import *
 from src.class_pa_lateral import PA_Lateral
 
