@@ -7,7 +7,7 @@ pa = PA_Lateral()
 def test_axis_capture():
 
     pa.define_flight_mode(managed_mode=True, cmd_type=None)
-    df = pd.read_excel("data/Ts_axis1.xlsx")
+    df = pd.read_excel("data/ts_axis1.xlsx")
 
     for _, row in df.iterrows():
         Vp = float(row['TAS'])
@@ -37,7 +37,7 @@ def test_axis_capture():
 def test_track_capture():
 
     pa.define_flight_mode(managed_mode=False, cmd_type="Track")
-    df = pd.read_excel("data/TS_route1.xlsx")
+    df = pd.read_excel("data/ts_route1.xlsx")
 
     for _, row in df.iterrows():
         Vp = float(row['TAS'])
@@ -67,7 +67,7 @@ def test_track_capture():
 def test_heading_capture():
 
     pa.define_flight_mode(managed_mode=False, cmd_type="Heading")
-    df = pd.read_excel("data/Ts_axis1.xlsx")
+    df = pd.read_excel("data/cap_axis1.xlsx")
 
     for _, row in df.iterrows():
         Vp = float(row['TAS'])
