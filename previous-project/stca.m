@@ -32,7 +32,9 @@ phi_data = sim_phi.Data;
 x_data   = sim_x.Data;
 y_data   = sim_y.Data;
 ey_data  = sim_ey.Data;  % O erro lateral calculado no Simulink
+gamma_data = sim_gamma.Data;
 v_data   = TAS_m_s.Data; % Sua velocidade
+roll_rate_data = sim_roll_rate.Data;
 
 % 3. Criar vetores de constantes (Cenário) para o Python ler
 % Isso é o "Pulo do Gato" para o teste automático saber o gabarito
@@ -44,13 +46,13 @@ rhoa_vec     = rhoa * ones(n, 1);
 Ts_vec       = Ts * ones(n,1);
 
 % --- CRIAÇÃO DA TABELA ---
-T = table(t_vec, v_data, psi_data, phi_data, x_data, y_data, ey_data, ...
+T = table(t_vec, v_data, psi_data, phi_data, x_data, y_data, ey_data, gamma_data, roll_rate_data, ...
           wind_spd_vec, wind_dir_vec, xa_vec, ya_vec, rhoa_vec, Ts_vec, ...
           'VariableNames', ...
-          {'Time', 'TAS', 'Psi', 'Phi', 'X', 'Y', 'Ey', ...
+          {'Time', 'TAS', 'Psi', 'Phi', 'X', 'Y', 'Ey','Gamma', 'Roll_rate', ...
            'Input_W', 'Input_PsiW', 'Input_Xa', 'Input_Ya', 'Input_Rhoa', 'Input_Ts'});
 
 % --- SALVAR EXCEL ---
-filename = 'Ts_axis1.xlsx';
+filename = 'ts_axis1.xlsx';
 writetable(T, filename);
 disp(['Dados salvos com sucesso em: ', filename]);

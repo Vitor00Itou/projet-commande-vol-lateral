@@ -39,7 +39,7 @@ psi_data = sim_psi.Data;
 phi_data = sim_phi.Data;
 x_data   = sim_x.Data;
 y_data   = sim_y.Data;
-ey_data  = sim_ey.Data;  % O erro lateral calculado no Simulink
+gamma_data = sim_gamma.Data;
 v_data   = TAS_m_s.Data; % Sua velocidade
 
 % 3. Criar vetores de constantes (Cenário) para o Python ler
@@ -51,15 +51,15 @@ ya_vec       = ya * ones(n, 1);
 rhoa_vec     = rhoa * ones(n, 1);
 Ts_vec       = Ts * ones(n,1);
 c_cap_vec    = commande_cap * ones(n,1);
+roll_rate_data = sim_roll_rate.Data;
 
-% --- CRIAÇÃO DA TABELA ---
-T = table(t_vec, psi_data, phi_data, x_data, y_data, ...
+T = table(t_vec, v_data, psi_data, phi_data, x_data, y_data, gamma_data, roll_rate_data,...
           c_cap_vec, wind_spd_vec, wind_dir_vec, Ts_vec, ...
           'VariableNames', ...
-          {'Time', 'Psi', 'Phi', 'X', 'Y', ...
-           'Input_cap', 'Input_W', 'Input_PsiW', 'Input_Ts'});
+          {'Time', 'TAS', 'Psi', 'Phi', 'X', 'Y','Gamma', 'Roll_rate', ...
+           'Input_cap','Input_W', 'Input_PsiW', 'Input_Ts'});
 
 % --- SALVAR EXCEL ---
-filename = 'TS_cap1.xlsx';
+filename = 'ts_cap1.xlsx';
 writetable(T, filename);
 disp(['Dados salvos com sucesso em: ', filename]);
