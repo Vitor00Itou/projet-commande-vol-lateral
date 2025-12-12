@@ -14,7 +14,7 @@ class PA_Lateral:
         self.psi_wind = PSI_WIND  
         self.timestamp = 0
         
-        stats = {
+        self.stats = {
             'Time': [],
             'TAS': [],
             'X': [],
