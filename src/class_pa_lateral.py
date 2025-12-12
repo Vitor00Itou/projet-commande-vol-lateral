@@ -14,6 +14,17 @@ class PA_Lateral:
         self.psi_wind = PSI_WIND  
         self.timestamp = 0
         
+        stats = {
+            'Time': [],
+            'TAS': [],
+            'X': [],
+            'Y': [],
+            'Ey': [],
+            'Psi': [],
+            'Phi': [],
+            'RollRate': []
+        }
+        
     def phi_command(self, heading_error):
         phi_command = heading_error * (V_EQUI / (GRAVITY * TAU_PSI))
         phi_command = max(-15 * DEG2RAD, min(phi_command, 15 * DEG2RAD))
@@ -27,7 +38,7 @@ class PA_Lateral:
             optimized_heading = optimized_heading + 2*pi
         return optimized_heading
     
-    def calculate_roll_rate(self, Vp, gamma, psi, phi): 
+    def calculate_roll_rate(self, X, Y, Vp, gamma, psi, phi): 
         psi_command = 0
         x_dot, y_dot, drift = track_capture(Vp, gamma, psi, self.wind, self.psi_wind)
         print("========= calculate_roll_rate =========")
@@ -55,7 +66,16 @@ class PA_Lateral:
         
         roll_rate = phi_error / TAU_PHI
         
-        return ey, roll_rate
+        self.stats['Time'].append(self.timestamp)
+        self.stats['TAS'].append(Vp)
+        self.stats['X'].append(X)
+        self.stats['Y'].append(Y)
+        self.stats['Ey'].append(ey)
+        self.stats['Psi'].append(psi)
+        self.stats['Phi'].append(phi)
+        self.stats['RollRate'].append(roll_rate)
+        
+        return roll_rate
     
     def define_flight_mode(self, managed_mode: bool, cmd_type: str, 
                            fcu_heading_command:float=None,

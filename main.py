@@ -3,17 +3,6 @@ import pandas as pd
 from ivy.std_api import *
 from src.class_pa_lateral import PA_Lateral
 
-stats = {
-    'Time': [],
-    'TAS': [],
-    'X': [],
-    'Y': [],
-    'Ey': [],
-    'Psi': [],
-    'Phi': [],
-    'RollRate': []
-}
-
 pa = PA_Lateral()
 
 def on_state_vector(agent, *larg):
@@ -26,6 +15,8 @@ def on_state_vector(agent, *larg):
         *larg: The state vector components as strings.
             Expected order: x, y, z, Vp, gamma (fpa), psi, phi
     """
+    X = float(larg[0])
+    Y = float(larg[1])
     Vp = float(larg[3])
     gamma = float(larg[4]) # 'fpa'
     psi = float(larg[5])
@@ -34,16 +25,7 @@ def on_state_vector(agent, *larg):
     print("======================== STATE VECTOR ========================")
     print(larg)
     
-    ey, roll_rate = pa.calculate_roll_rate(Vp, gamma, psi, phi)
-    
-    stats['Time'].append(pa.timestamp)
-    stats['TAS'].append(Vp)
-    stats['X'].append(float(larg[0]))
-    stats['Y'].append(float(larg[1]))
-    stats['Ey'].append(ey)
-    stats['Psi'].append(psi)
-    stats['Phi'].append(phi)
-    stats['RollRate'].append(roll_rate)
+    roll_rate = pa.calculate_roll_rate(X, Y, Vp, gamma, psi, phi)
     
     roll_rate_msg = f'PALat {roll_rate}'
     IvySendMsg(roll_rate_msg)
