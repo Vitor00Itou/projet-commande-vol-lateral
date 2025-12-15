@@ -2,9 +2,9 @@ import pandas as pd
 from src.class_pa_lateral import PA_Lateral
 import pytest
 
-pa = PA_Lateral()
-
 def test_axis_capture():
+
+    pa = PA_Lateral()
 
     pa.define_flight_mode(managed_mode=True, cmd_type=None)
     df = pd.read_excel("data/ts_axis1.xlsx")
@@ -15,6 +15,8 @@ def test_axis_capture():
         Phi = float(row['Phi'])
         X = float(row['X'])
         Y = float(row['Y'])
+        gamma = float(row['Gamma'])
+        roll_rate = float(row['Roll_rate'])
         W = float(row['Input_W'])
         PsiW = float(row['Input_PsiW'])
         Xa = float(row['Input_Xa'])
@@ -25,7 +27,7 @@ def test_axis_capture():
         pa.update_timestamp(Ts_val)
         pa.update_wind_conditions(W, PsiW)
         pa.update_fgs_axis_command((Xa, Ya, Ra))
-        pa.calculate_roll_rate(X, Y, Vp, gamma=0, psi=Psi, phi=Phi)  
+        pa.calculate_roll_rate(X, Y, Vp, gamma=gamma, psi=Psi, phi=Phi)  
 
     stats = pa.stats
 
@@ -36,6 +38,8 @@ def test_axis_capture():
 
 def test_track_capture():
 
+    pa = PA_Lateral()
+
     pa.define_flight_mode(managed_mode=False, cmd_type="Track")
     df = pd.read_excel("data/ts_route1.xlsx")
 
@@ -45,17 +49,17 @@ def test_track_capture():
         Phi = float(row['Phi'])
         X = float(row['X'])
         Y = float(row['Y'])
+        gamma = float(row['Gamma'])
+        roll_rate = float(row['Roll_rate'])
+        input_route = float(row['Input_route'])
         W = float(row['Input_W'])
         PsiW = float(row['Input_PsiW'])
-        Xa = float(row['Input_Xa'])
-        Ya = float(row['Input_Ya'])
-        Ra = float(row['Input_Rhoa'])
         Ts_val = float(row['Input_Ts'])
 
         pa.update_timestamp(Ts_val)
         pa.update_wind_conditions(W, PsiW)
-        pa.update_fgs_axis_command((Xa, Ya, Ra))
-        pa.calculate_roll_rate(X, Y, Vp, gamma=0, psi=Psi, phi=Phi)  
+        pa.update_fcu_track_command((input_route))
+        pa.calculate_roll_rate(X, Y, Vp, gamma=gamma, psi=Psi, phi=Phi)  
 
     stats = pa.stats
 
@@ -66,8 +70,10 @@ def test_track_capture():
 
 def test_heading_capture():
 
+    pa = PA_Lateral()
+
     pa.define_flight_mode(managed_mode=False, cmd_type="Heading")
-    df = pd.read_excel("data/cap_axis1.xlsx")
+    df = pd.read_excel("data/ts_cap1.xlsx")
 
     for _, row in df.iterrows():
         Vp = float(row['TAS'])
@@ -75,17 +81,17 @@ def test_heading_capture():
         Phi = float(row['Phi'])
         X = float(row['X'])
         Y = float(row['Y'])
+        gamma = float(row['Gamma'])
+        roll_rate = float(row['Roll_rate'])
+        input_cap = float(row['Input_cap'])
         W = float(row['Input_W'])
         PsiW = float(row['Input_PsiW'])
-        Xa = float(row['Input_Xa'])
-        Ya = float(row['Input_Ya'])
-        Ra = float(row['Input_Rhoa'])
         Ts_val = float(row['Input_Ts'])
 
         pa.update_timestamp(Ts_val)
         pa.update_wind_conditions(W, PsiW)
-        pa.update_fgs_axis_command((Xa, Ya, Ra))
-        pa.calculate_roll_rate(X, Y, Vp, gamma=0, psi=Psi, phi=Phi)  
+        pa.update_fcu_heading_command((input_cap))
+        pa.calculate_roll_rate(X, Y, Vp, gamma=gamma, psi=Psi, phi=Phi)  
 
     stats = pa.stats
 
