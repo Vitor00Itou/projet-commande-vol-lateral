@@ -41,7 +41,7 @@ class PA_Lateral:
     def calculate_roll_rate(self, X, Y, Vp, gamma, psi, phi): 
         psi_command = 0
         x_dot, y_dot, drift = track_capture(Vp, gamma, psi, self.wind, self.psi_wind)
-        print("========= calculate_roll_rate =========")
+        #print("========= calculate_roll_rate =========")
         
         ey = 0
         if self.managed_mode_on:
@@ -50,7 +50,7 @@ class PA_Lateral:
             axis_track = self.fgs_axis_command[2]
             
             ey, fgs_track_command = axis_capture(x_dot, y_dot, axis_x, axis_y, axis_track, self.timestamp)    
-            print(fgs_track_command)
+            #print(fgs_track_command)
             psi_command = fgs_track_command - drift
         else:
             if self.command_type == "Heading":
@@ -58,7 +58,7 @@ class PA_Lateral:
             elif self.command_type == "Track":
                 psi_command = self.fcu_track_command - drift
 
-        print(psi_command)
+        #print(psi_command)
         psi_error = psi_command - psi
         psi_error = self.modulo360(psi_error)
         
