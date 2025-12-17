@@ -62,7 +62,7 @@ k1 = w0**2 * V_EQUI / GRAVITY
 k2 = 2*m*w0
 
 # Contrôle lateral 2
-TAU_PHI = 0.4
+TAU_PHI = 1
 TAU_PSI = 10*TAU_PHI # tau_psi >> tau_phi
 
 # Capture d'axe
