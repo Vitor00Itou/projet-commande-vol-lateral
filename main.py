@@ -2,6 +2,7 @@ import pandas as pd
 from ivy.std_api import *
 from src.class_pa_lateral import PA_Lateral
 
+# Instantiate the lateral autopilot class
 pa = PA_Lateral()
 
 def on_state_vector(agent, *larg):
@@ -85,7 +86,7 @@ def on_wind_component(agent, *larg):
     wind_speed = float(larg[0])
     wind_dir = float(larg[1])
     pa.update_wind_conditions(wind_speed, wind_dir)
-    
+
 def on_timestamp(agent, *larg):
     """
     Handles the timestamp message, updating the PA_Lateral instance
@@ -98,12 +99,17 @@ def on_timestamp(agent, *larg):
     t = float(larg[0])
     pa.update_timestamp(t)
 
-
+"""
+Handles the main Ivy communication loop for the lateral autopilot.
+"""
 null_callback = lambda *a: None
 module_name = "PALateral"
 bus_address = "127.255.255.255:2010"
 ready_msg = "Ready"
 
+"""
+Initializes the Ivy module and starts the communication bus.
+"""
 IvyInit(
     module_name,
     ready_msg,
@@ -113,29 +119,44 @@ IvyInit(
 )
 IvyStart(bus_address)
 
-# Receives the current state vector of the plane
-# Indices no capture: x=0, y=1, z=2, Vp=3, fpa=4, psi=5, phi=6
+"""
+Receives the current state vector of the plane
+Units are x, y, z in meters, Vp in m/s, fpa (gamma), psi radians and phi in radians
+"""
 STATE_VECTOR_TOPIC = r'^StateVector x=(\S+) y=(\S+) z=(\S+) Vp=(\S+) fpa=(\S+) psi=(\S+) phi=(\S+)'
 IvyBindMsg(on_state_vector, STATE_VECTOR_TOPIC)
 
-# Receives "lateral selected mode" trigger, type and value
+"""
+Receives "lateral selected mode" trigger, type and value
+Values for mode are "Heading" or "Track", followed by the command value in radians
+"""
 FCU_LATERAL_SELECTED_TOPIC = r'^FCULateral Mode=Selected(\S+) Val=(\S+)'
 IvyBindMsg(on_FCU_lateral_selected, FCU_LATERAL_SELECTED_TOPIC)
 
-# Receives "lateral managed mode" trigger
+"""
+Receives "lateral managed mode" trigger signal. Value is ignored.
+"""
 FCU_LATERAL_MANAGED_TRIGGER_TOPIC = r'^FCULateral Mode=Managed Val=(\S+)'
 IvyBindMsg(on_FCU_lateral_managed_trigger, FCU_LATERAL_MANAGED_TRIGGER_TOPIC)
 
-# Receives FGS lateral command
+"""
+Receives FGS lateral command
+Units are xa, ya in meters and RAa (axis track) in radians
+"""
 FGS_LATERAL_COMMAND_TOPIC = r'^FGSLateral Mode=Axe Xa=(\S+) Ya=(\S+) Ra=(\S+)'
 IvyBindMsg(on_FGS_axis_capture_command, FGS_LATERAL_COMMAND_TOPIC)
 
-# Receives wind parameters
+"""
+Receives wind parameters
+Units are wind speed in knots and direction in which the wind comes from (dirWind) in radians
+"""
 WIND_COMPONENT_TOPIC = r'WindComponent VWind=(\S+) dirWind=(\S+)'
 IvyBindMsg(on_wind_component, WIND_COMPONENT_TOPIC)
 
-# Receives timestamps
+"""
+Receives timestamps
+"""
 TIMESTAMP_TOPIC = r'Time t=(\S+)'
 IvyBindMsg(on_timestamp, TIMESTAMP_TOPIC)
 
-IvyMainLoop()
+IvyMainLoop() # ça commence!

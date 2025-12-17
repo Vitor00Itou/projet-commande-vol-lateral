@@ -1,16 +1,8 @@
 import numpy as np
 
 """
-Modelling and control of point mass aircraft model
-
-clear
-%close all
-%bdclose all
-warning('off')
-
-%% The system.
-
-%Constantes
+Constants used in the lateral autopilot simulation, translated from MATLAB.
+Used variables have been renamed to follow Python conventions (uppercase with underscores).
 """
 
 pi = np.pi
@@ -31,7 +23,7 @@ WIND_SPEED = 30*KTS2MS # vitesse du vent, m/s
 # Conditions initiales dans les integrateurs de modeleAvion
 Vie = 130*KTS2MS # vitesse indiqu�e initiale
 gammae = 0*DEG2RAD # rad
-psie = 0*DEG2RAD # rad
+PSI_EQUI = 0*DEG2RAD # rad
 phie = 0*5*DEG2RAD # rad
 
 # Conditions initiales dans les integrateurs de cinematiqueDuVol
@@ -41,7 +33,7 @@ ze = 0*100*FL2M # m
 
 # Linearisation
 V_EQUI = Vie + k*ze
-xe = [V_EQUI, gammae, psie, phie] # jsais pas quoi c'est ça
+xe = [V_EQUI, gammae, PSI_EQUI, phie] # jsais pas quoi c'est ça
 nxe = np.sin(gammae)
 nze = np.cos(gammae)
 pe = 0

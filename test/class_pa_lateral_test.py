@@ -4,14 +4,12 @@ import os
 import sys
 import numpy as np
 
-# --- PATH CONFIGURATION ---
 # Guarantee that the src folder is in the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.class_pa_lateral import PA_Lateral
 
-# --- GENERAL CONFIGURATIONS ---
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'output')
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'output') # Output data directory
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data') # Input data directory
 
 # Creates output directory if it doesn't exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -27,7 +25,7 @@ def run_simulation_and_save(pa, input_filename, output_filename):
     input_path = os.path.join(DATA_DIR, input_filename)
     output_path = os.path.join(OUTPUT_DIR, output_filename)
 
-    assert os.path.exists(input_path), f"Ficheiro não encontrado: {input_path}"
+    assert os.path.exists(input_path), f"File not found: {input_path}"
     
     df = pd.read_excel(input_path)
     
@@ -67,81 +65,81 @@ def run_simulation_and_save(pa, input_filename, output_filename):
         pa.update_wind_conditions(W, PsiW)
         pa.update_fgs_axis_command((Xa, Ya, Ra))
         
-        # 4. Calcular (Executar a lógica)
+        # Calculate roll rate
         roll_rate_py = pa.calculate_roll_rate(X, Y, Vp, gamma=gamma, psi=Psi, phi=Phi)
         
-        # 5. Guardar resultados
+        # Save results
         py_roll_rates.append(roll_rate_py)
         
-        # --- CAPTURA DO Ey ---
-        # Verifica se o PA calculou e guardou o Ey no stats
+        # Ey capture
+        # Verifies if we are in managed mode to get Ey in the stats
         if pa.stats and 'Ey' in pa.stats and len(pa.stats['Ey']) > 0:
             py_ey_values.append(pa.stats['Ey'][-1])
         else:
-            # Se não houver Ey (ex: modo Heading), guarda 0 ou NaN
+            # If there is no Ey (e.g., Heading mode), store 0 or NaN
             py_ey_values.append(0.0)
 
-    # --- PÓS-PROCESSAMENTO ---
+    # --- POST-PROCESSING ---
     
-    # Adiciona os resultados do Python ao DataFrame original
+    # Adds Python results to the DataFrame
     df['Py_RollRate'] = py_roll_rates
     df['Py_Ey'] = py_ey_values # <--- NOVA COLUNA NO EXCEL
-    
-    # Renomeia colunas de referência do Matlab para clareza
+
+    # Renames MATLAB columns for clarity
     if 'Roll_rate' in df.columns:
         df.rename(columns={'Roll_rate': 'Ref_RollRate'}, inplace=True)
     
-    # Calcula diferenças (Erros)
+    # Calculates differences (Errors)
     if 'Ref_RollRate' in df.columns:
         df['Diff_RollRate'] = df['Py_RollRate'] - df['Ref_RollRate']
         
-    # Comparação do Ey (Se existir Ey no ficheiro original)
+    # Ey comparison (if Ey exists in the original file)
     if 'Ey' in df.columns:
         df.rename(columns={'Ey': 'Ref_Ey'}, inplace=True)
         df['Diff_Ey'] = df['Py_Ey'] - df['Ref_Ey'] # <--- DIFERENÇA DO ERRO LATERAL
 
-    # Guarda o Excel final
+    # Stores the final Excel
     df.to_excel(output_path, index=False)
     print(f"\n[INFO] Resultados guardados em: {output_path}")
     
     return df
 
-# --- 4. FIXTURE ---
+# --- FIXTURE ---
 @pytest.fixture
 def pa():
     return PA_Lateral()
 
-# --- 5. TESTES ---
+# --- ACTUAL TESTS ---
 
 def test_axis_capture(pa):
-    print("\n--- Rodando Teste: Axis Capture ---")
+    print("\n--- Running test: Axis Capture ---")
     pa.define_flight_mode(managed_mode=True, cmd_type=None)
     
     df = run_simulation_and_save(pa, "ts_axis1.xlsx", "result_axis.xlsx")
     
-    # Validação do Roll Rate
+    # Roll Rate Validation
     if 'Ref_RollRate' in df.columns:
         valid_rows = df.dropna(subset=['Ref_RollRate'])
         max_error_roll = valid_rows['Diff_RollRate'].abs().max()
         print(f"Erro Máx RollRate: {max_error_roll:.5f}")
         assert max_error_roll < 0.05, f"RollRate diverge! Erro: {max_error_roll}"
 
-    # Validação do Ey (Erro Lateral) - CRUCIAL PARA AXIS CAPTURE
+    # Ey Validation (Lateral Error Validation - CRUCIAL FOR AXIS CAPTURE)
     if 'Ref_Ey' in df.columns:
         valid_rows_ey = df.dropna(subset=['Ref_Ey'])
         max_error_ey = valid_rows_ey['Diff_Ey'].abs().max()
         print(f"Erro Máx Ey: {max_error_ey:.5f}")
         
-        # Tolerância maior para posição (ex: 1 metro), pois erros acumulam
         assert max_error_ey < 1.0, f"Ey diverge! O Python está a {max_error_ey} m do Matlab"
 
 
 def test_track_capture(pa):
-    print("\n--- Rodando Teste: Track Capture ---")
+    print("\n--- Running test: Track Capture ---")
     pa.define_flight_mode(managed_mode=False, cmd_type="Track")
     
     df = run_simulation_and_save(pa, "ts_route1.xlsx", "result_track.xlsx")
     
+    # Roll Rate Validation
     if 'Ref_RollRate' in df.columns:
         valid_rows = df.dropna(subset=['Ref_RollRate'])
         max_error = valid_rows['Diff_RollRate'].abs().max()
@@ -150,11 +148,12 @@ def test_track_capture(pa):
 
 
 def test_heading_capture(pa):
-    print("\n--- Rodando Teste: Heading Capture ---")
+    print("\n--- Running test: Heading Capture ---")
     pa.define_flight_mode(managed_mode=False, cmd_type="Heading")
     
     df = run_simulation_and_save(pa, "ts_cap1.xlsx", "result_heading.xlsx")
     
+    # Roll Rate Validation
     if 'Ref_RollRate' in df.columns:
         valid_rows = df.dropna(subset=['Ref_RollRate'])
         max_error = valid_rows['Diff_RollRate'].abs().max()

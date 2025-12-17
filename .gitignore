@@ -2,4 +2,5 @@ venv/
 previous-project/slprj
 *.mat
 __pycache__/
+.pytest_cache/
 *.l

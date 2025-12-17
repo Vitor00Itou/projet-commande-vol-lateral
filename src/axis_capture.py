@@ -7,6 +7,9 @@ This function has been named 'captureEcartLateral' in MATLAB, and the last argum
 def axis_lateral_distance(x, xa, y, ya, axis_track):
     return -(x - xa) * sin(axis_track) + (y - ya) * cos(axis_track)
 
+"""
+Calculates the track correction command needed to reduce lateral distance to zero.
+"""
 def get_track_command(x_dot, y_dot, lateral_distance, time_constant, axis_track):
 	ground_speed = sqrt(x_dot**2 + y_dot**2)
 	arg = -lateral_distance / (time_constant * ground_speed)

@@ -1,5 +1,8 @@
 from numpy import atan2, cos, asin, sin, pi
 
+"""
+Dynamic equations for ground speed components and drift angle
+"""
 def get_x_dot(V, gamma, psi, wind, psi_wind):
     return V * cos(gamma) * cos(psi) + wind * cos(psi_wind + pi);
 
@@ -11,7 +14,10 @@ def get_drift(V, gamma, wind, psi_wind, track):
     arg = max(-1, min(1, arg)) # -1 <= arg <= 1
     return asin(arg)
 
-# Named as 'capture_de_route' in MATLAB
+"""
+Named as 'capture_de_route' in the MATLAB implementation.
+Calculates ground speed components and drift angle.
+"""
 def track_capture(V, gamma, psi, wind, psi_wind):
     x_dot = get_x_dot(V, gamma, psi, wind, psi_wind)
     y_dot = get_y_dot(V, gamma, psi, wind, psi_wind)
