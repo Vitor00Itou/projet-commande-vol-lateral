@@ -21,9 +21,6 @@ def on_state_vector(agent, *larg):
     psi = float(larg[5])
     phi = float(larg[6])
     
-    print("======================== STATE VECTOR ========================")
-    print(larg)
-    
     roll_rate = pa.calculate_roll_rate(X, Y, Vp, gamma, psi, phi)
     
     roll_rate_msg = f'PALat {roll_rate}'

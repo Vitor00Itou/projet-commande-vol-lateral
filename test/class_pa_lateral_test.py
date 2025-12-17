@@ -4,25 +4,25 @@ import os
 import sys
 import numpy as np
 
-# --- 1. CONFIGURAÇÃO DE CAMINHOS ---
-# Garante que o python encontre a pasta 'src'
+# --- PATH CONFIGURATION ---
+# Guarantee that the src folder is in the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.class_pa_lateral import PA_Lateral
 
-# --- 2. CONFIGURAÇÕES GERAIS ---
+# --- GENERAL CONFIGURATIONS ---
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'output')
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 
-# Cria a pasta de output se não existir
+# Creates output directory if it doesn't exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# --- 3. HELPER FUNCTION (O Motor dos Testes) ---
+# --- AUXILIARY FUNCTION (Tests Engine) ---
 def run_simulation_and_save(pa, input_filename, output_filename):
     """
-    1. Lê o Excel de referência.
-    2. Roda a simulação Python linha a linha.
-    3. Compara resultados (Roll Rate e Ey).
-    4. Guarda um novo Excel para inspeção visual.
+    1. Reads the reference Excel.
+    2. Runs the Python simulation line by line.
+    3. Compares results (Roll Rate and Ey).
+    4. Saves a new Excel for visual inspection.
     """
     input_path = os.path.join(DATA_DIR, input_filename)
     output_path = os.path.join(OUTPUT_DIR, output_filename)
@@ -31,13 +31,13 @@ def run_simulation_and_save(pa, input_filename, output_filename):
     
     df = pd.read_excel(input_path)
     
-    # Listas para armazenar o resultado do Python
+    # List for storing Python results
     py_roll_rates = []
-    py_ey_values = [] # <--- NOVA LISTA PARA O Ey
+    py_ey_values = [] # <--- NEW LIST FOR Ey
     
-    # --- LOOP DE SIMULAÇÃO ---
+    # --- SIMULATION LOOP ---
     for _, row in df.iterrows():
-        # 1. Ler Inputs do Avião (Estado)
+        # Read inputs from the Excel row
         Vp = float(row['TAS'])
         Psi = float(row['Psi'])
         Phi = float(row['Phi'])
@@ -45,24 +45,24 @@ def run_simulation_and_save(pa, input_filename, output_filename):
         Y = float(row.get('Y', 0))
         gamma = float(row.get('Gamma', 0))
         
-        # 2. Ler Inputs de Cenário/Controle
+        # Read scenario/control inputs
         W = float(row.get('Input_W', 0))
         PsiW = float(row.get('Input_PsiW', 0))
         Ts_val = float(row.get('Time', 1.0))
         
-        # Inputs de Axis
+        # Inputs related to Axis Capture
         Xa = float(row.get('Input_Xa', 0))
         Ya = float(row.get('Input_Ya', 0))
         Ra = float(row.get('Input_Rhoa', 0))
 
-        # Inputs de FCU (Heading/Track)
+        # Inputs related to FCU (Heading/Track)
         if 'Input_route' in row and not pd.isna(row['Input_route']):
             pa.update_fcu_track_command(float(row['Input_route']))
             
         if 'Input_cap' in row and not pd.isna(row['Input_cap']):
             pa.update_fcu_heading_command(float(row['Input_cap']))
 
-        # 3. Atualizar PA
+        # Update the AP
         pa.update_timestamp(Ts_val)
         pa.update_wind_conditions(W, PsiW)
         pa.update_fgs_axis_command((Xa, Ya, Ra))
@@ -133,7 +133,7 @@ def test_axis_capture(pa):
         print(f"Erro Máx Ey: {max_error_ey:.5f}")
         
         # Tolerância maior para posição (ex: 1 metro), pois erros acumulam
-        assert max_error_ey < 1.0, f"Ey diverge! O Python está a {max_error_ey}m do Matlab"
+        assert max_error_ey < 1.0, f"Ey diverge! O Python está a {max_error_ey} m do Matlab"
 
 
 def test_track_capture(pa):
