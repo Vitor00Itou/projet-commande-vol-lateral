@@ -1,4 +1,4 @@
-%% Modelling and control of point mass aircraft model
+    %% Modelling and control of point mass aircraft model
 %
 %%
 %clear

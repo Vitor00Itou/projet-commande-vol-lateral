@@ -48,7 +48,7 @@ def run_simulation_and_save(pa, input_filename, output_filename):
         # 2. Ler Inputs de Cenário/Controle
         W = float(row.get('Input_W', 0))
         PsiW = float(row.get('Input_PsiW', 0))
-        Ts_val = float(row.get('Input_Ts', 1.0))
+        Ts_val = float(row.get('Time', 1.0))
         
         # Inputs de Axis
         Xa = float(row.get('Input_Xa', 0))
