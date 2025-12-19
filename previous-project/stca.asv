@@ -1,0 +1,36 @@
+%% Script de Geração Automática de Cenários de Teste
+clear; close all; clc; warning('off');
+
+% ---------------------------------------------------------
+% 1. CONFIGURAÇÃO DE DIRETÓRIOS À PROVA DE FALHAS
+% ---------------------------------------------------------
+% Pega o caminho completo de onde ESTE ARQUIVO .m está salvo
+fullpath_script = mfilename('fullpath');
+[pasta_do_script, ~, ~] = fileparts(fullpath_script);
+
+% Define a pasta 'data' subindo um nível a partir do script
+% Supondo estrutura: raiz/matlab/script.m  -> raiz/data
+output_dir = fullfile(pasta_do_script, '..', 'data');
+
+% Normaliza o caminho para remover ".." e ficar bonito
+output_dir = GetFullPath(output_dir); % *Ver nota abaixo se der erro nessa função
+
+% Se a função GetFullPath não existir (padrão Matlab), usemos java.io.File:
+try
+   output_dir = char(java.io.File(output_dir).getCanonicalPath());
+catch
+   % Fallback simples se Java falhar
+   output_dir = fullfile(pasta_do_script, '..', 'data'); 
+end
+
+fprintf('DIRETÓRIO ALVO DETECTADO: %s\n', output_dir);
+
+% Cria a pasta se ela não existir
+if ~exist(output_dir, 'dir')
+    mkdir(output_dir);
+    fprintf('Pasta criada: %s\n', output_dir);
+else
+    fprintf('Pasta já existe. Salvando arquivos nela.\n');
+end
+
+% ... (Resto do código: model_name, cenários, loop...)
